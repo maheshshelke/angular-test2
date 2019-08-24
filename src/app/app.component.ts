@@ -19,6 +19,9 @@ export class AppComponent implements OnInit {
   public hitsArray: Hit[] = [];
   private doctors = [];
   displayedColumns: string[] = ['title', 'url', 'created_at', 'author'];
+
+  obs: Observable<any>;
+    subscriber;
   constructor(private http: HttpClient, public dialog: MatDialog, private pollService: PollService) {
 
   }
@@ -28,15 +31,15 @@ export class AppComponent implements OnInit {
   }
 
   addNewPost() {
-    setInterval(() => {
-      this.pollService.getPollData().subscribe(data => {
-        this.pollingData = data;
-        if (data.hits) {
-          this.hitsArray = data.hits;
-        }
-        // console.log("============ API data: ", data);
-      });
-    }, 10000);
+
+    let url = `https://hn.algolia.com/api/v1/search_by_date?tags=story`;
+
+    this.obs = Observable
+      .timer(0, 1000) // poll once a minute
+      .switchMap(() => this.http.get(url))
+    this.subscriber = this.obs.subscribe(data => {
+      this.hitsArray = data.hits;
+    });
   }
 
   openDialog(index: number): void {
@@ -45,6 +48,7 @@ export class AppComponent implements OnInit {
       height: '500px',
       data: this.hitsArray[index]
     });
+
   }
 
 
