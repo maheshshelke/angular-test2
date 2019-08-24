@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
     let url = `https://hn.algolia.com/api/v1/search_by_date?tags=story`;
 
     this.obs = Observable
-      .timer(0, 1000) // poll once a minute
+      .timer(0, 10000) // poll once a minute
       .switchMap(() => this.http.get(url))
     this.subscriber = this.obs.subscribe(data => {
       this.hitsArray = data.hits;
